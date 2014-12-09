@@ -25,6 +25,7 @@ def upgrade():
         sa.Column('created_at', sa.DateTime(), nullable=True),
         sa.Column('updated_at', sa.DateTime(), nullable=True),
         sa.Column('name', sa.String(length=50), nullable=True),
+        sa.Column('operator_id', sa.Integer(), nullable=True),
         sa.UniqueConstraint('name', name='uniq_systems_name'),
         sa.PrimaryKeyConstraint('id'),
         mysql_engine=MYSQL_ENGINE,

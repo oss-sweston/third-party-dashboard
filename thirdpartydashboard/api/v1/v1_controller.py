@@ -1,6 +1,8 @@
-from thirdpartydashboard.api.v1.system import SystemController
 import pecan
 from pecan import rest
+
+from thirdpartydashboard.api.v1.system import SystemController
+
 
 class V1Controller(rest.RestController):
     @pecan.expose('json')

@@ -18,7 +18,7 @@ from oslo.config import cfg
 app = {
     'root': 'thirdpartydashboard.api.v1.root_controller.RootController',
     'modules': ['thirdpartydashboard.api'],
-    'debug': False
+    'debug': True
 }
 
 cfg.CONF.register_opts([
