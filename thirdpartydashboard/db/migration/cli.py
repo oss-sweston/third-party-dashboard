@@ -24,10 +24,6 @@ from alembic import util as alembic_util
 from oslo.config import cfg
 from oslo.db import options
 
-from thirdpartydashboard.db import projects_loader
-from thirdpartydashboard.db import superusers_loader
-
-
 gettext.install('thirdpartydashboard', unicode=1)
 
 CONF = cfg.CONF
@@ -72,14 +68,6 @@ def do_revision(config, cmd):
                        sql=CONF.command.sql)
 
 
-def do_load_projects(config, cmd):
-    projects_loader.do_load_models(CONF.command.file)
-
-
-def do_load_superusers(config, cmd):
-    superusers_loader.do_load_models(CONF.command.file)
-
-
 def add_command_parsers(subparsers):
     for name in ['current', 'history', 'branches']:
         parser = subparsers.add_parser(name)
@@ -105,15 +93,6 @@ def add_command_parsers(subparsers):
     parser.add_argument('--autogenerate', action='store_true')
     parser.add_argument('--sql', action='store_true')
     parser.set_defaults(func=do_revision)
-
-    parser = subparsers.add_parser('load_projects')
-    parser.add_argument('file', type=str)
-    parser.set_defaults(func=do_load_projects)
-
-    parser = subparsers.add_parser('load_superusers')
-    parser.add_argument('file', type=str)
-    parser.set_defaults(func=do_load_superusers)
-
 
 command_opt = cfg.SubCommandOpt('command',
                                 title='Command',

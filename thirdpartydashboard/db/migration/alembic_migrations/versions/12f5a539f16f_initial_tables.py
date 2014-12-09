@@ -1,13 +1,13 @@
-"""create_systems_table
+"""initial_tables
 
-Revision ID: 28bea6898a5a
+Revision ID: 12f5a539f16f
 Revises: 
-Create Date: 2014-12-08 17:57:59.696618
+Create Date: 2014-12-08 20:56:38.468330
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '28bea6898a5a'
+revision = '12f5a539f16f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -15,8 +15,10 @@ depends_on = None
 from alembic import op
 import sqlalchemy as sa
 
+MYSQL_ENGINE = 'InnoDB'
+MYSQL_CHARSET = 'utf8'
 
-def upgrade(active_plugins=None, options=None):
+def upgrade():
     op.create_table(
         'systems',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -25,7 +27,6 @@ def upgrade(active_plugins=None, options=None):
         sa.Column('name', sa.String(length=50), nullable=True),
                 sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('name', name='uniq_systems_name'),
-        sa.ForeignKeyConstraint(['operator_id'], ),
         sa.PrimaryKeyConstraint('id'),
         mysql_engine=MYSQL_ENGINE,
         mysql_charset=MYSQL_CHARSET
@@ -44,4 +45,5 @@ def upgrade(active_plugins=None, options=None):
 
 
 def downgrade():
-    pass
+    os.drop_table('systems')
+    op.drop_table('system_events')

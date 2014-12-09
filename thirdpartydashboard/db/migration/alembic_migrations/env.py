@@ -1,26 +1,36 @@
-from __future__ import with_statement
+# Copyright 2012 New Dream Network, LLC (DreamHost)
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+# from logging.config import fileConfig
+
 from alembic import context
-from sqlalchemy import engine_from_config, pool
-from logging.config import fileConfig
+from sqlalchemy import create_engine, pool
+
+from thirdpartydashboard.db import models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+thirdpartydashboard_config = config.thirdpartydashboard_config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+# TODO(mordred): enable this once we're doing something with logging
+# fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+# set the target for 'autogenerate' support
+target_metadata = models.Base.metadata
 
 
 def run_migrations_offline():
@@ -35,8 +45,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
-    context.configure(url=url, target_metadata=target_metadata)
+    context.configure(url=thirdpartydashboard_config.database.connection)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -49,9 +58,8 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    engine = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix='sqlalchemy.',
+    engine = create_engine(
+        thirdpartydashboard_config.database.connection,
         poolclass=pool.NullPool)
 
     connection = engine.connect()
@@ -65,6 +73,7 @@ def run_migrations_online():
             context.run_migrations()
     finally:
         connection.close()
+
 
 if context.is_offline_mode():
     run_migrations_offline()
