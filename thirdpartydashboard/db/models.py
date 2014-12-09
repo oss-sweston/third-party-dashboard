@@ -101,3 +101,10 @@ class SystemEvent(ModelBuilder, Base):
     system_id = Column(Integer, ForeignKey('systems.id'))
     event_type = Column(Unicode(100), nullable=False)
     event_info = Column(UnicodeText(), nullable=True)
+
+class Operator(ModelBuilder, Base):
+    __tablename__ = "operators"
+
+    operator_name = Column(Unicode(50))
+    operator_email = Column(Unicode(50))
+    systems = relationship('System', backref='operator')
