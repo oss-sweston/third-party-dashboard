@@ -9,9 +9,9 @@ import six
 import sqlalchemy.types as types
 from wsme.exc import ClientSideError
 
-from dashboard.common import exception as exc
-from dashboard.db import models
-from dashboard.openstack.common import log
+from thirdpartydashboard.common import exception as exc
+from thirdpartydashboard.db import models
+from thirdpartydashboard.openstack.common import log
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
