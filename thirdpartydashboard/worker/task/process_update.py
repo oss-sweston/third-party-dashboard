@@ -19,6 +19,7 @@ class ProcessCISystems():
         self._uri = "https://review.openstack.org"
         self._pp = pprint.PrettyPrinter(indent=4)
         self._systems_resource = '/systems'
+        self._operators_resource = '/operators'
         self.default_headers = {}
 
     def get_credentials(self):
@@ -49,21 +50,36 @@ class ProcessCISystems():
                     cis_operator_email = line[line.rfind(":")+3:line.rfind(",")-1]
                 if line.find("\"username\"") > -1:
                     cis_operator_username = line[line.rfind(":")+3:line.rfind(",")-1]
-                    system = { 'name': cis_system_name,
-                               'operators': [{
-                                     'operator_name': cis_operator_username,
-                                     'operator_email': cis_operator_email }]
-                            }
+                    system = {"name": cis_system_name}
+                    print "Attempting to import %s" % cis_system_name
                     if not self.system_exists(self._systems_resource, system):
                         self._responses.append(self.post_json(self._systems_resource, system))
-                        thesystem = json.loads(self._responses[1])
+                        thesystem = json.loads(self._responses[1].text)
+                        success=True
+                        system_id=''
                         try:
-                            url = "%s/%d" % (self._systems_resource, thesystem['id'])
+                            system_id = thesystem['id']
+                            url = "%s/%d" % (self._systems_resource, system_id)
                             thesystem = self.get_json(url)
                         except KeyError as ke:
-                            pass
+                            print "System %s has already been imported" % cis_system_name
+                            success=False
                         finally:
                             self._responses.remove(self._responses[1])
+                        if success:
+                            operator = {"system_id": system_id,
+                                        "operator_name": cis_operator_username,
+                                        "operator_email": cis_operator_email}
+                            self._responses.append(self.post_json(self._operators_resource, operator))
+                            theoperator = json.loads(self._responses[1].text)
+                            try:
+                                operator_id = theoperator['id']
+                                url = "%s/%d" % (self._operators_resource, operator_id)
+                                theoperator = self.get_json(url)
+                            except KeyError as ke:
+                                pass
+                            finally:
+                                self._responses.remove(self._responses[1])
 
     def _request_json(self, path, params, headers=None, method="post",
                       status=None, path_prefix="http://10.211.55.29:8080"):
@@ -82,7 +98,7 @@ class ProcessCISystems():
         else:   
             response = requests.get(str(full_path))
 
-        return response.text
+        return response
 
 
     def put_json(self, path, params, headers=None, status=None):

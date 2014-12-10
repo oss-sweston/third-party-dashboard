@@ -118,8 +118,6 @@ class SystemsController(rest.RestController):
         #system_dict.update({"creator_id": user_id})
         created_system = systems_api.system_create(system_dict)
 
-        #events_api.system_created_event(created_system.id, user_id, system.title)
-
         return wmodels.System.from_db_model(created_system)
 
     #@secure(checks.authenticated)

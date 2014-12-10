@@ -53,6 +53,7 @@ def system_get_all(name=None, marker=None, limit=None, sort_field=None, sort_dir
 
     # Execute the query
     return query.all()
+
 def system_create(values):
     return api_base.entity_create(models.System, values)
 
