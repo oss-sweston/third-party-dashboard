@@ -117,12 +117,16 @@ class ProcessCISystems():
     def system_exists(self, path, system, headers=None, status=None):
         try:
             response = self.get_json(path + "/" + system['name'])
-            if system['name'] in response:
-                return True    
+            if response.status_code == requests.codes.ok:
+                print "%s has already been imported" % system['name']
+                return True
+            else:
+                return False
         except KeyError as ke:
             return False
 
     def do_update(self):
+        self.__init__()
         self.get_credentials()
         self.process_systems()
 

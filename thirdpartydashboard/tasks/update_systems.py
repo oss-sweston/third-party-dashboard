@@ -37,13 +37,12 @@ def update():
     while updater.started:
         LOG.info("processing systems")
         updater.systems.do_update()
+        LOG.info("done processing systems. Sleeping for 5 minutes.")
 
         time.sleep(300)
         continue
 
 class Updater():
-
-    #def __init__(self, conf):
     def __init__(self):
         self.started = False
         self.systems = ProcessCISystems()
