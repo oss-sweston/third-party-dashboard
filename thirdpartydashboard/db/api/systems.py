@@ -21,6 +21,46 @@ from thirdpartydashboard.db.api import base as api_base
 from thirdpartydashboard.db import models
 
 
-def system_get_simple(system_id, session=None):
+def system_get(system_id, session=None):
     return api_base.model_query(models.System, session) \
         .filter_by(id=system_id).first()
+
+def system_get_by_name(name, session=None):
+    query = api_base.model_query(models.System, session)
+    return query.filter_by(name=name).first()
+
+def system_get_all(name=None, marker=None, limit=None, sort_field=None, sort_dir=None, **kwargs):
+    # Sanity checks, in case someone accidentally explicitly passes in 'None'
+    if not sort_field:
+        sort_field = 'id'
+    if not sort_dir:
+        sort_dir = 'asc'
+
+    query = system_build_query(name=name, **kwargs)
+
+    try:
+        query = api_base.paginate_query(query=query,
+                                        model=models.System,
+                                        limit=limit,
+                                        sort_keys=[sort_field],
+                                        marker=marker,
+                                        sort_dir=sort_dir)
+    except InvalidSortKey:
+        raise ClientSideError("Invalid sort_field [%s]" % (sort_field,),
+                              status_code=400)
+    except ValueError as ve:
+        raise ClientSideError("%s" % (ve,), status_code=400)
+
+    # Execute the query
+    return query.all()
+def system_create(values):
+    return api_base.entity_create(models.System, values)
+
+def system_update(system_id, values):
+    return api_base.entity_update(models.System, system_id, values)
+
+def system_delete(system_id):
+    system = system_get(system_id)
+
+    if system:
+        api_base.entity_hard_delete(models.System, system_id)
